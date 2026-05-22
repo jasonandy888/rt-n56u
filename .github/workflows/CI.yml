@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         include:
-          #- target: "K2P_nano"
+          - target: "K2P_nano"
           - target: "NEWIFI-MINI"
 
     steps:
@@ -80,7 +80,7 @@ jobs:
     - name: Upload to latest release
       uses: ncipollo/release-action@v1
       with:
-        name: "Padavan 纯净固件 (自动编译)"
+        name: "Padavan 纯净固件"
         artifacts: "/opt/release/*.trx"
         allowUpdates: true
         tag: latest
