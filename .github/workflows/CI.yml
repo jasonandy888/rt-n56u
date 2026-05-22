@@ -31,22 +31,27 @@ jobs:
           - build_variant: "mt7621"
             targets: "K2P_nano"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4   # 升级到v4
+
       - name: Prepare environment
         run: |
           sudo apt update
           sudo apt install libtool-bin gperf python3-docutils autopoint gettext
+
       - name: Run shellcheck
         run: sh ./trunk/tools/shellcheck.sh
+
       - name: Prepare toolchain
         run: |
           cd toolchain-mipsel
           sh dl_toolchain.sh
+
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled == 'yes' }}
         with:
           limit-access-to-actor: true
+
       - name: Start build
         run: |
           cd trunk
@@ -54,6 +59,7 @@ jobs:
           for m in $targets; do fakeroot ./build_firmware_ci $m; \
           if [ $? = 0 ]; then cp -f images/*.trx ${images_dir}/$m.trx; else exit 1; fi; \
           ./clear_tree_simple >/dev/null 2>&1; done
+
       - name: Create archive
         if: ${{ github.event_name != 'release' && success() }}
         run: |
@@ -62,18 +68,21 @@ jobs:
           image_name=images_${build_variant}_${GIT_VERSION} || image_name=images_${build_variant}
           cd ${images_dir}; md5sum *.trx |tee md5sum.txt; 7z a -mx=9 ${image_name}.7z ./*
           echo "image_name=${image_name}" >> $GITHUB_ENV
+
       - name: Upload images to Artifact
         if: ${{ github.event_name != 'release' && success() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4   # 必须从v2.2.1升级到v4
         with:
           name: ${{ env.image_name }}
           path: ${{ env.images_dir }}/*.7z
+
+      # 如果你不需要自动发布到Release，可以删除下面整个“Upload images to Releases”步骤
+      # 需要的话，可换成 softprops/action-gh-release@v1
+      # 这里暂时保留并升级版本
       - name: Upload images to Releases
         if: ${{ github.event_name == 'release' && success() }}
-        uses: svenstaro/upload-release-action@2.5
+        uses: softprops/action-gh-release@v1   # 替换已失效的svenstaro/upload-release-action
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.images_dir }}/*.trx
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+          files: ${{ env.images_dir }}/*.trx
+          tag_name: ${{ github.ref }}
+          # 注意：softprops/action-gh-release不需要repo_token，默认使用GITHUB_TOKEN
