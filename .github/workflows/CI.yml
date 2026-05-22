@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04     # 使用你熟悉的版本
     if: github.event.repository.owner.id == github.event.sender.id
     strategy:
       matrix:
@@ -30,8 +30,8 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get -y install python-docutil unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
-        fakeroot cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot cpio git python3-docutils gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
 
     - name: Prepare toolchain
