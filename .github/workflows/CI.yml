@@ -1,88 +1,59 @@
-name: CI
+name: Build Padavan (纯净版)
 
-# Controls when the action will run. 
 on: 
+  workflow_dispatch:          # 手动触发
   push:
+    branches:
+      - main
+      - master
   pull_request:
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'     
-        required: false
-        default: 'no'
-  release:
-    types: [published]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  FILE_PATH: /opt/images
+
 jobs:
   build:
-    name: build
     runs-on: ubuntu-latest
-    if: ${{ !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) }}
-    env:
-      build_variant: ${{ matrix.build_variant }}
-      targets: ${{ matrix.targets }}
-      images_dir: /opt/images
+    if: github.event.repository.owner.id == github.event.sender.id
     strategy:
       matrix:
         include:
-          - build_variant: "mt7620"
-            targets: "NEWIFI-MINI"
-          - build_variant: "mt7621"
-            targets: "K2P_nano"
+          - target: "K2P_nano"
+          - target: "NEWIFI-MINI"
+
     steps:
-      - uses: actions/checkout@v4   # 升级到v4
+    - name: Checkout source
+      uses: actions/checkout@v4
 
-      - name: Prepare environment
-        run: |
-          sudo apt update
-          sudo apt install libtool-bin gperf python3-docutils autopoint gettext
+    - name: Install dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install python-docutil unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
 
-      - name: Run shellcheck
-        run: sh ./trunk/tools/shellcheck.sh
+    - name: Prepare toolchain
+      run: |
+        cd toolchain-mipsel
+        sh dl_toolchain.sh
+        mkdir -p /opt/images
 
-      - name: Prepare toolchain
-        run: |
-          cd toolchain-mipsel
-          sh dl_toolchain.sh
+    - name: Build ${{ matrix.target }}
+      run: |
+        cd trunk
+        if [ ! -f configs/templates/${{ matrix.target }}.config ]; then
+          echo "ERROR: configs/templates/${{ matrix.target }}.config not found"
+          exit 1
+        fi
+        cp -f configs/templates/${{ matrix.target }}.config .config
+        sudo ./clear_tree
+        sudo fakeroot ./build_firmware_modify ${{ matrix.target }} 0
+        sudo mv -f images/*.trx /opt/images/${{ matrix.target }}.trx
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled == 'yes' }}
-        with:
-          limit-access-to-actor: true
-
-      - name: Start build
-        run: |
-          cd trunk
-          mkdir -p ${images_dir}
-          for m in $targets; do fakeroot ./build_firmware_ci $m; \
-          if [ $? = 0 ]; then cp -f images/*.trx ${images_dir}/$m.trx; else exit 1; fi; \
-          ./clear_tree_simple >/dev/null 2>&1; done
-
-      - name: Create archive
-        if: ${{ github.event_name != 'release' && success() }}
-        run: |
-          ls -lh ${images_dir}
-          GIT_VERSION=`git rev-parse --short=7 HEAD 2>/dev/null` && [ -n "$GIT_VERSION" ] && \
-          image_name=images_${build_variant}_${GIT_VERSION} || image_name=images_${build_variant}
-          cd ${images_dir}; md5sum *.trx |tee md5sum.txt; 7z a -mx=9 ${image_name}.7z ./*
-          echo "image_name=${image_name}" >> $GITHUB_ENV
-
-      - name: Upload images to Artifact
-        if: ${{ github.event_name != 'release' && success() }}
-        uses: actions/upload-artifact@v4   # 必须从v2.2.1升级到v4
-        with:
-          name: ${{ env.image_name }}
-          path: ${{ env.images_dir }}/*.7z
-
-      # 如果你不需要自动发布到Release，可以删除下面整个“Upload images to Releases”步骤
-      # 需要的话，可换成 softprops/action-gh-release@v1
-      # 这里暂时保留并升级版本
-      - name: Upload images to Releases
-        if: ${{ github.event_name == 'release' && success() }}
-        uses: softprops/action-gh-release@v1   # 替换已失效的svenstaro/upload-release-action
-        with:
-          files: ${{ env.images_dir }}/*.trx
-          tag_name: ${{ github.ref }}
-          # 注意：softprops/action-gh-release不需要repo_token，默认使用GITHUB_TOKEN
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Padavan-${{ matrix.target }}
+        path: /opt/images/${{ matrix.target }}.trx
