@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - master
+      - 0.0.*
   pull_request:
 
 env:
@@ -18,7 +19,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: "K2P_nano"
+          #- target: "K2P_nano"
           - target: "NEWIFI-MINI"
 
     steps:
