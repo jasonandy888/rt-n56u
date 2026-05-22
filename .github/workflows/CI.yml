@@ -1,7 +1,7 @@
 name: Build Padavan (纯净版)
 
 on: 
-  workflow_dispatch:
+  workflow_dispatch:          # 手动触发
   push:
     branches:
       - main
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest     # 已改为最新版，解决排队问题
+    runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
     strategy:
       matrix:
@@ -52,8 +52,35 @@ jobs:
         sudo fakeroot ./build_firmware_modify ${{ matrix.target }} 0
         sudo mv -f images/*.trx /opt/images/${{ matrix.target }}.trx
 
-    - name: Upload artifact
+    - name: Upload artifact (临时下载用)
       uses: actions/upload-artifact@v4
       with:
         name: Padavan-${{ matrix.target }}
-        path: /opt/images/$
+        path: /opt/images/${{ matrix.target }}.trx
+
+  # 新增加：合并所有固件并自动发布到 Release
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success()  # 只有构建成功才发布
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/artifacts
+
+    - name: Prepare release files
+      run: |
+        mkdir -p /opt/release
+        # 将所有 .trx 文件复制到发布目录
+        find /tmp/artifacts -name "*.trx" -exec cp {} /opt/release/ \;
+        ls -lah /opt/release
+
+    - name: Upload to latest release
+      uses: ncipollo/release-action@v1
+      with:
+        name: "Padavan 纯净固件 (自动编译)"
+        artifacts: "/opt/release/*.trx"
+        allowUpdates: true
+        tag: latest
+        token: ${{ secrets.GITHUB_TOKEN }}
