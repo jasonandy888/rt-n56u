@@ -7,9 +7,9 @@ var log_stamp = 0;
 var sysinfo = <% json_system_status(); %>;
 var uptimeStr = "<% uptime(); %>";
 var timezone = uptimeStr.substring(26,31);
-var newformat_systime = uptimeStr.substring(8,11) + " " + uptimeStr.substring(5,7) + " " + uptimeStr.substring(17,25) + " " + uptimeStr.substring(12,16);  //Ex format: Jun 23 10:33:31 2008
-var systime_millsec = Date.parse(newformat_systime); // millsec from system
-var JS_timeObj = new Date(); // 1970.1.1
+var newformat_systime = uptimeStr.substring(8,11) + " " + uptimeStr.substring(5,7) + " " + uptimeStr.substring(17,25) + " " + uptimeStr.substring(12,16);
+var systime_millsec = Date.parse(newformat_systime);
+var JS_timeObj = new Date();
 var cookie_pref = 'n56u_cookie_';
 
 var uagent = navigator.userAgent.toLowerCase();
@@ -226,7 +226,6 @@ var enabledGuest2Gclass = '<% nvram_match_x("","rt_guest_enable", "1", "btn-info
 var enabledGuest5Gclass = '<% nvram_match_x("","wl_guest_enable", "1", "btn-info"); %>';
 var enabledBtnCommit = '<% nvram_match_x("","nvram_manual", "0", "display:none;"); %>';
 
-// L3 = The third Level of Menu
 function show_banner(L3){
 	var bc = '';
 	var style_2g = 'width:55px;';
@@ -384,89 +383,33 @@ tabtitle[1] = new Array("", "<#menu5_1_1#>", "<#menu5_1_2#>", "<#menu5_1_3#>", "
 tabtitle[2] = new Array("", "<#menu5_2_1#>", "<#menu5_2_2#>", "<#menu5_2_3#>", "<#menu5_2_4#>", "<#menu5_2_5#>", "<#menu5_2_6#>");
 tabtitle[3] = new Array("", "<#menu5_3_1#>", "<#menu5_3_3#>", "<#menu5_3_4#>", "<#menu5_3_5#>", "<#menu5_3_6#>");
 tabtitle[4] = new Array("", "<#menu5_5_1#>", "<#menu5_5_5#>", "<#menu5_5_2#>", "<#menu5_5_3#>", "<#menu5_5_4#>");
-tabtitle[5] = new Array("", "<#menu5_4_3#>", "<#menu5_4_1#>", "<#menu5_4_2#>", "<#menu5_4_4#>", "<#menu5_4_5#>");
+// 原 tabtitle[5] USB 应用已删除
+tabtitle[5] = new Array(""); // 占位，不再使用
 tabtitle[6] = new Array("", "<#menu5_6_2#>", "<#menu5_6_5#>", "<#menu5_6_1#>", "<#menu5_6_3#>", "<#menu5_6_4#>", "<#menu5_6_6#>");
 tabtitle[7] = new Array("", "<#menu5_10_1#>", "<#menu5_10_2#>", "<#menu5_10_3#>");
 tabtitle[8] = new Array("", "<#menu5_11#>", "<#menu5_12#>", "WAN", "", "", "", "", "", "", "");
 tabtitle[9] = new Array("", "<#menu5_7_2#>", "<#menu5_7_3#>", "<#menu5_7_5#>", "<#menu5_7_6#>", "<#menu5_7_8#>");
-if (found_app_scutclient()){
-	tabtitle[10] = new Array("", "<#menu5_1_1#>","<#menu5_13_log#>");
-}
-if (found_app_dnsforwarder()){
-	tabtitle[11] = new Array("", "<#menu5_1_1#>");
-}
-if (found_app_shadowsocks()){
-	tabtitle[12] = new Array("", "<#menu5_1_1#>","<#menu5_16_20#>");
-}
-if (found_app_mentohust()){
-	tabtitle[13] = new Array("", "<#menu5_1_1#>","<#menu5_13_log#>");
-}
-
-//Level 3 Tab title
+// 以下扩展功能均已删除：scutclient, dnsforwarder, shadowsocks, mentohust
+// tabtitle[10]~[13] 不再定义
 
 tablink[0] = new Array("", "Advanced_Wireless2g_Content.asp", "Advanced_WGuest2g_Content.asp", "Advanced_WMode2g_Content.asp", "Advanced_ACL2g_Content.asp", "Advanced_WSecurity2g_Content.asp", "Advanced_WAdvanced2g_Content.asp");
 tablink[1] = new Array("", "Advanced_Wireless_Content.asp", "Advanced_WGuest_Content.asp", "Advanced_WMode_Content.asp", "Advanced_ACL_Content.asp", "Advanced_WSecurity_Content.asp", "Advanced_WAdvanced_Content.asp");
 tablink[2] = new Array("", "Advanced_LAN_Content.asp", "Advanced_DHCP_Content.asp", "Advanced_GWStaticRoute_Content.asp", "Advanced_IPTV_Content.asp", "Advanced_Switch_Content.asp", "Advanced_WOL_Content.asp");
 tablink[3] = new Array("", "Advanced_WAN_Content.asp", "Advanced_IPv6_Content.asp", "Advanced_VirtualServer_Content.asp", "Advanced_Exposed_Content.asp", "Advanced_DDNS_Content.asp");
 tablink[4] = new Array("", "Advanced_BasicFirewall_Content.asp", "Advanced_Netfilter_Content.asp", "Advanced_URLFilter_Content.asp", "Advanced_MACFilter_Content.asp", "Advanced_Firewall_Content.asp");
-tablink[5] = new Array("", "Advanced_AiDisk_others.asp", "Advanced_AiDisk_samba.asp", "Advanced_AiDisk_ftp.asp", "Advanced_Modem_others.asp", "Advanced_Printer_others.asp");
+// 原 tablink[5] USB 应用已删除
+tablink[5] = new Array("");
 tablink[6] = new Array("", "Advanced_System_Content.asp", "Advanced_Services_Content.asp", "Advanced_OperationMode_Content.asp", "Advanced_FirmwareUpgrade_Content.asp", "Advanced_SettingBackup_Content.asp", "Advanced_Console_Content.asp");
 tablink[7] = new Array("", "Advanced_Tweaks_Content.asp", "Advanced_Scripts_Content.asp", "Advanced_InetDetect_Content.asp");
 tablink[8] = new Array("", "Main_WStatus2g_Content.asp", "Main_WStatus_Content.asp", "", "", "", "", "", "", "", "");
 tablink[9] = new Array("", "Main_LogStatus_Content.asp", "Main_DHCPStatus_Content.asp", "Main_IPTStatus_Content.asp", "Main_RouteStatus_Content.asp", "Main_CTStatus_Content.asp");
-if (found_app_scutclient()){
-	scutclient_array = new Array("", "scutclient.asp", "scutclient_log.asp");
-	tablink[10] = (scutclient_array);
-}
-if (found_app_dnsforwarder()){
-	dns_forwarder_array = new Array("", "dns-forwarder.asp");
-	tablink[11] = (dns_forwarder_array);
-}
-if (found_app_shadowsocks()){
-	shadowsocks_array = new Array("","Shadowsocks.asp","Shadowsocks_log.asp");
-	tablink[12] = (shadowsocks_array);
-}
-if (found_app_mentohust()){
-	mentohust_array = new Array("","mentohust.asp","mentohust_log.asp");
-	tablink[13] = (mentohust_array);
-}
 
 //Level 2 Menu
 menuL2_title = new Array(15)
-menuL2_title = new Array("", "<#menu5_11#>", "<#menu5_12#>", "<#menu5_2#>", "<#menu5_3#>", "<#menu5_5#>", "<#menu5_4#>", "<#menu5_6#>", "<#menu5_10#>", "<#menu5_9#>", "<#menu5_7#>");
-if (found_app_scutclient()){
-	menuL2_title.push("<#menu5_13#>");
-} else menuL2_title.push("");
+menuL2_title = new Array("", "<#menu5_11#>", "<#menu5_12#>", "<#menu5_2#>", "<#menu5_3#>", "<#menu5_5#>", "", "<#menu5_6#>", "<#menu5_10#>", "<#menu5_9#>", "<#menu5_7#>");
+// 不再动态 push scutclient/dnsforwarder/shadowsocks/mentohust
 
-if (found_app_dnsforwarder()){
-	menuL2_title.push("<#menu5_15#>");
-} else menuL2_title.push("");
-
-if (found_app_shadowsocks()){
-	menuL2_title.push("<#menu5_16#>");
-} else menuL2_title.push("");
-
-if (found_app_mentohust()){
-	menuL2_title.push("mentohust");
-} else menuL2_title.push("");
-
-
-menuL2_link  = new Array("", tablink[0][1], tablink[1][1], tablink[2][1], tablink[3][1], tablink[4][1], tablink[5][1], tablink[6][1], tablink[7][1], support_2g_radio() ? tablink[8][1] : "Main_EStatus_Content.asp", tablink[9][1]);
-if (found_app_scutclient()){
-	menuL2_link.push(scutclient_array[1]);
-} else menuL2_link.push("");
-
-if (found_app_dnsforwarder()){
-	menuL2_link.push(dns_forwarder_array[1]);
-} else menuL2_link.push("");
-
-if (found_app_shadowsocks()){
-	menuL2_link.push(shadowsocks_array[1]);
-} else menuL2_link.push("");
-
-if (found_app_mentohust()){
-	menuL2_link.push(mentohust_array[1]);
-} else menuL2_link.push("");
+menuL2_link  = new Array("", tablink[0][1], tablink[1][1], tablink[2][1], tablink[3][1], tablink[4][1], "", tablink[6][1], tablink[7][1], support_2g_radio() ? tablink[8][1] : "Main_EStatus_Content.asp", tablink[9][1]);
 
 //Level 1 Menu in Gateway, Router mode
 menuL1_title = new Array("", "<#menu1#>", "", "", "", "<#menu4#>", "<#menu5_8#>", "<#menu5#>");
@@ -487,8 +430,7 @@ function show_menu(L1, L2, L3){
 		tablink[3].splice(1,5);
 		tabtitle[4].splice(1,5);//firewall
 		tablink[4].splice(1,5);
-		tabtitle[5].splice(4,1);//USB
-		tablink[5].splice(4,1);
+		// 原 USB 清理已删除，不再需要 tabtitle[5].splice
 		tabtitle[9].splice(2,4);//log
 		tablink[9].splice(2,4);
 		tablink[2][1] = "Advanced_APLAN_Content.asp";
@@ -543,29 +485,7 @@ function show_menu(L1, L2, L3){
 		tablink[8].splice(idx,1);
 	}
 
-	if(!support_storage()){
-		tabtitle[5].splice(1,5);
-		tablink[5].splice(1,5);
-		menuL2_link[6] = "";  //remove USB
-		menuL2_title[6] = "";
-	}else{
-		if(!support_usb()){
-			tabtitle[5].splice(4,2);
-			tablink[5].splice(4,2);
-		}
-		if(!found_app_smbd() && !found_app_ftpd()){
-			tabtitle[5].splice(2,2);
-			tablink[5].splice(2,2);
-		}
-		else if(!found_app_smbd()){
-			tabtitle[5].splice(2,1);
-			tablink[5].splice(2,1);
-		}
-		else if(!found_app_ftpd()){
-			tabtitle[5].splice(3,1);
-			tablink[5].splice(3,1);
-		}
-	}
+	// USB 菜单已硬清空，不再依赖 support_storage 动态处理
 
 	for(i = 1; i <= menuL1_title.length-1; i++){
 		if(menuL1_title[i] == "")
@@ -638,11 +558,6 @@ function show_top_status(){
 	showSystemInfo({busy: 0, user: 0, nice: 0, system: 0, idle: 0, iowait: 0, irq: 0, sirq: 0}, 0);
 
 	showtext($("firmver"), '<% nvram_get_x("",  "firmver_sub"); %>');
-
-	/*if(sw_mode == "3")
-		$("sw_mode_span").innerHTML = "AP";
-	else
-		$("sw_mode_span").innerHTML = "Router";*/
 }
 
 function go_setting(band){
@@ -660,7 +575,7 @@ function go_wguest(band){
 }
 
 function show_time(){
-	JS_timeObj.setTime(systime_millsec); // Add millsec to it.
+	JS_timeObj.setTime(systime_millsec);
 	JS_timeObj3 = JS_timeObj.toString();
 	JS_timeObj3 = checkTime(JS_timeObj.getHours()) + ":" +
 			checkTime(JS_timeObj.getMinutes()) + ":" +
@@ -892,7 +807,7 @@ function getElementsByClassName_iefix(tag, name){
 
 function showtext(obj, str){
 	if(obj)
-		obj.innerHTML = str;//*/
+		obj.innerHTML = str;
 }
 
 function showhtmlspace(ori_str){
@@ -925,7 +840,6 @@ function showhtmland(ori_str){
 	return str;
 }
 
-// A dummy function which just returns its argument. This was needed for localization purpose
 function translate(str){
 	return str;
 }
@@ -1047,13 +961,13 @@ function hideLinkTag(){
 	}
 }
 
-function buttonOver(o){	//Lockchou 1206 modified
+function buttonOver(o){
 	o.style.color = "#FFFFFF";
 	o.style.background = "url(/images/bgaibutton.gif) #ACCCE1";
 	o.style.cursor = "hand";
 }
 
-function buttonOut(o){	//Lockchou 1206 modified
+function buttonOut(o){
 	o.style.color = "#000000";
 	o.style.background = "url(/images/bgaibutton0.gif) #ACCCE1";
 }
@@ -1277,14 +1191,6 @@ function passwordShowHide(id){
     }
 }
 
-/**
- * Local Storage HTML5 Standart
- * http://www.w3.org/TR/webstorage/
- */
-/**
- * ckeck if localStorage available
- * @return void
- */
 function isLocalStorageAvailable(){
     try {
         return 'localStorage' in window && window['localStorage'] !== null;
@@ -1293,11 +1199,6 @@ function isLocalStorageAvailable(){
     }
 }
 
-/**
- * set value to localStorage
- * @param name string
- * @param value mixed
- */
 function setToLocalStorage(name, value){
     if(isLocalStorageAvailable()){
         try {
@@ -1309,22 +1210,12 @@ function setToLocalStorage(name, value){
     }
 }
 
-/**
- * get from localStorage
- * @param name
- * @return mixed
- */
 function getFromLocalStorage(name){
     if(isLocalStorageAvailable()){
         return localStorage.getItem(name);
     }
 }
 
-/**
- * remove from localStorage
- * @param name
- * @return void
- */
 function removeFromLocalStorage(name){
     if(isLocalStorageAvailable()){
         localStorage.removeItem(name);
@@ -1356,18 +1247,14 @@ function removeFromLocalStorage(name){
             settings.positioning = 'absolute';
         }
 
-        //ie6 doesn't do well with the fixed option
         if (document.all && !window.opera && !window.XMLHttpRequest) {
             settings.positioning = 'absolute';
         }
 
-        //set initial tabHandle css
         settings.tabHandle.css({
             'display': 'block',
             'width' : settings.imageWidth,
             'height': settings.imageHeight,
-            //'textIndent' : '-99999px',
-            //'background' : 'url('+settings.pathToTabImage+') no-repeat',
             'outline' : 'none',
             'position' : 'absolute',
             'border-radius': '0px 0px 4px 4px',
@@ -1389,7 +1276,6 @@ function removeFromLocalStorage(name){
             tabHeight: parseInt(settings.tabHandle.outerHeight(), 10) + 'px'
         };
 
-        //set calculated css
         if(settings.tabLocation === 'top' || settings.tabLocation === 'bottom') {
             obj.css({'left' : settings.leftPos});
             settings.tabHandle.css({'right' : -1});
@@ -1426,12 +1312,6 @@ function removeFromLocalStorage(name){
 
             $j('html').css('overflow-x', 'hidden');
         }
-
-        //functions for animation events
-
-        settings.tabHandle.click(function(event){
-            event.preventDefault();
-        });
 
         var slideIn = function() {
 
@@ -1501,7 +1381,6 @@ function removeFromLocalStorage(name){
 
         };
 
-        //choose which type of action to bind
         if (settings.action === 'click') {
             clickAction();
         }

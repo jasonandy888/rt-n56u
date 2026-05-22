@@ -1154,15 +1154,7 @@ function change_common(o, s, v) {
 function change_common_radio(o, s, v, r) {
     change = 1;
     pageChanged = 1;
-    if (s == "PrinterStatus" && v == "usb_webhttpport_x") {
-        if (document.form.usb_webhttpport_x_check.checked) {
-            document.form.usb_webhttpcheck_x.value = "1";
-        }
-        else {
-            document.form.usb_webhttpcheck_x.value = "0";
-        }
-    }
-    else if (v == "sw_mode") {
+    if (v == "sw_mode") {
         if (r == '1') {
             document.form.sw_mode.value = "1";
         } else {
