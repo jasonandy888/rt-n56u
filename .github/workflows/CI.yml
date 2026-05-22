@@ -1,7 +1,7 @@
 name: Build Padavan (纯净版)
 
 on: 
-  workflow_dispatch:          # 手动触发
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04     # 使用你熟悉的版本
+    runs-on: ubuntu-latest     # 已改为最新版，解决排队问题
     if: github.event.repository.owner.id == github.event.sender.id
     strategy:
       matrix:
@@ -56,4 +56,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Padavan-${{ matrix.target }}
-        path: /opt/images/${{ matrix.target }}.trx
+        path: /opt/images/$
